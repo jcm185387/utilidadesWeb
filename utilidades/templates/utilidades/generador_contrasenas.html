@@ -1,0 +1,123 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Generador de Contraseñas Seguras</h1>
+    <p>
+        Una contraseña segura es esencial para proteger tu información en línea. 
+        Usa esta herramienta para generar contraseñas robustas y personalizadas que sean difíciles de adivinar.
+    </p>
+
+    <!-- Distribución en dos columnas -->
+    <div class="row">
+        <!-- Columna izquierda: Formulario -->
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="longitud">Longitud de la contraseña:</label>
+                    <input type="number" name="longitud" class="form-control" value="{{ longitud }}" min="8" required>
+                </div>
+                <div class="form-group">
+                    <label>Incluye:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="mayusculas" id="mayusculas" 
+                               {% if mayusculas == 'on' %}checked{% endif %}>
+                        <label class="form-check-label" for="mayusculas">Mayúsculas</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="minusculas" id="minusculas" 
+                               {% if minusculas == 'on' %}checked{% endif %}>
+                        <label class="form-check-label" for="minusculas">Minúsculas</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="numeros" id="numeros" 
+                               {% if numeros == 'on' %}checked{% endif %}>
+                        <label class="form-check-label" for="numeros">Números</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="simbolos" id="simbolos" 
+                               {% if simbolos == 'on' %}checked{% endif %}>
+                        <label class="form-check-label" for="simbolos">Símbolos</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Generar Contraseña</button>
+            </form>
+
+            {% if error %}
+            <div class="alert alert-danger mt-3">
+                {{ error }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Columna derecha: Resultado -->
+        <div class="col-md-6">
+            {% if contrasena %}
+            <div class="bg-light p-3 rounded">
+                <h5>Contraseña Generada:</h5>
+                <p class="fw-bold text-success">{{ contrasena }}</p>
+                <p class="text-muted">
+                    La contraseña se generó con los siguientes parámetros:
+                    <ul class="list-group list-group-flush no-lines">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">                            
+                            <label class="form-check-label {% if mayusculas == 'on' %}text-success{% endif %}">
+                                Mayúsculas
+                            </label>
+                            <input type="checkbox" disabled {% if mayusculas == 'on' %}checked{% endif %} 
+                                   class="form-check-input {% if mayusculas == 'on' %}text-success{% endif %}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">                            
+                            <label class="form-check-label {% if minusculas == 'on' %}text-success{% endif %}">
+                                Minúsculas
+                            </label>
+                            <input type="checkbox" disabled {% if minusculas == 'on' %}checked{% endif %} 
+                                   class="form-check-input {% if minusculas == 'on' %}text-success{% endif %}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">                            
+                            <label class="form-check-label {% if numeros == 'on' %}text-success{% endif %}">
+                                Números
+                            </label>
+                            <input type="checkbox" disabled {% if numeros == 'on' %}checked{% endif %} 
+                                   class="form-check-input {% if numeros == 'on' %}text-success{% endif %}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">                            
+                            <label class="form-check-label {% if simbolos == 'on' %}text-success{% endif %}">
+                                Símbolos
+                            </label>
+                            <input type="checkbox" disabled {% if simbolos == 'on' %}checked{% endif %} 
+                                   class="form-check-input {% if simbolos == 'on' %}text-success{% endif %}">
+                        </li>
+                    </ul>
+                </p>
+                <p class="text-muted">
+                    Recuerda copiar tu contraseña y guardarla en un lugar seguro, como un gestor de contraseñas.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        
+    </div>
+
+    <!-- Explicación adicional -->
+    <div class="mt-4">
+        <h5>¿Por qué necesitas contraseñas seguras?</h5>
+        <p>
+            En un mundo donde gran parte de nuestra información está en línea, 
+            usar contraseñas robustas es clave para proteger tus cuentas frente a ataques de hackers 
+            o accesos no autorizados.
+        </p>
+        <h5>¿Cómo funciona este generador?</h5>
+        <p>
+            Este generador toma las opciones que seleccionas (longitud, uso de mayúsculas, números o símbolos) 
+            y crea una combinación única que es casi imposible de adivinar.
+        </p>
+        <h5>Consejos para gestionar tus contraseñas:</h5>
+        <ul>
+            <li><strong>Usa un gestor de contraseñas:</strong> Es la mejor manera de guardar contraseñas de manera segura.</li>
+            <li><strong>No uses la misma contraseña:</strong> Cada cuenta debe tener su propia contraseña única.</li>
+            <li><strong>Actualízalas regularmente:</strong> Cambia tus contraseñas más importantes al menos cada 6 meses.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

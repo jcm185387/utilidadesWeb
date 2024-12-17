@@ -1,0 +1,91 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+    <div class="container mt-5 ">
+        <!-- Título y breve descripción del objetivo de la sección -->
+        <h1 class="text-center mb-4">Contador de Fechas</h1>
+        <p class="text-center">Esta herramienta te permite calcular la diferencia entre dos fechas, considerando días corridos, días hábiles, semanas, meses y años. Puedes elegir si incluir la fecha inicial en el cálculo.</p>
+
+        <!-- Formulario y Resultado al lado -->
+        <div class="row justify-content-center">
+            <!-- Formulario para ingresar las fechas -->
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="fecha_inicial" class="form-label">Fecha Inicial</label>
+                                <input type="date" id="fecha_inicial" name="fecha_inicial" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_final" class="form-label">Fecha Final</label>
+                                <input type="date" id="fecha_final" name="fecha_final" class="form-control" required>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" id="incluir_inicial" name="incluir_inicial" class="form-check-input">
+                                <label for="incluir_inicial" class="form-check-label">Incluir Fecha Inicial (+1 día)</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Calcular</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mostrar el resultado del cálculo -->
+            <div class="col-md-6">
+                {% if resultado %}
+                    <div class="card shadow p-4">
+                        <h5>Resultado</h5>
+                        <p><strong>Días Corridos:</strong> {{ resultado.dias_corridos }}</p>
+                        <p><strong>Días Hábiles (Lun-Vie):</strong> {{ resultado.dias_habiles_lun_vie }}</p>
+                        <p><strong>Días Hábiles (Lun-Sáb):</strong> {{ resultado.dias_habiles_lun_sab }}</p>
+                        <p><strong>Semanas:</strong> {{ resultado.semanas }}</p>
+                        <p><strong>Meses:</strong> {{ resultado.meses }}</p>
+                        <p><strong>Años:</strong> {{ resultado.años }}</p>
+
+
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Preguntas y respuestas adicionales sobre los cálculos -->
+        <div class="mt-4">
+            <!-- Metodología utilizada para los cálculos -->
+            <h5 class="mt-4">Metodología utilizada</h5>
+            <p>Para calcular la diferencia entre las fechas, se utilizó la siguiente metodología:</p>
+            <ul>
+                <li><strong>Días Corridos:</strong> Se calculó la diferencia en días entre las dos fechas, incluyendo ambos días.</li>
+                <li><strong>Días Hábiles (Lun-Vie):</strong> Se contaron solo los días laborales de lunes a viernes.</li>
+                <li><strong>Días Hábiles (Lun-Sáb):</strong> Se contaron los días laborales de lunes a sábado.</li>
+                <li><strong>Semanas:</strong> Se dividió el número total de días corridos entre 7 para obtener el número de semanas.</li>
+                <li><strong>Meses:</strong> Se dividió el número total de días corridos entre 30.44 (promedio de días en un mes).</li>
+                <li><strong>Años:</strong> Se dividió el número total de días corridos entre 365.25 (promedio de días en un año, considerando años bisiestos).</li>
+            </ul>
+            <h5>¿Cómo calcular cuántos días han pasado desde una fecha?</h5>
+            <p>Para calcular cuántos días han pasado desde una fecha, se debe restar la fecha actual de la fecha ingresada. Esto te dará el número de días transcurridos hasta hoy.</p>
+
+            <h5>¿Cómo calcular cuántos días faltan para una fecha?</h5>
+            <p>Para calcular cuántos días faltan para una fecha, debes restar la fecha actual de la fecha futura. El resultado será el número de días restantes hasta esa fecha.</p>
+
+            <h5>Diferencia entre días corridos y hábiles</h5>
+            <p>Los días corridos incluyen todos los días entre dos fechas, mientras que los días hábiles son solo aquellos días que no son fines de semana ni feriados, dependiendo de la región.</p>
+
+            <h5>¿Cuántos días hábiles tiene un mes?</h5>
+            <p>En promedio, un mes tiene entre 20 y 23 días hábiles, dependiendo de los fines de semana y feriados. Generalmente, se asume que un mes tiene 22 días hábiles.</p>
+
+            <h5>¿Cuántos días hábiles tiene un año?</h5>
+            <p>Un año tiene aproximadamente 252 días hábiles, considerando que hay 52 semanas y 2 días de fin de semana por semana (52 semanas * 2 días = 104 días de fin de semana). Si le restamos esos 104 días, obtenemos 252 días hábiles al año.</p>
+
+            <h5>Aplicaciones prácticas de contar días en el mundo real</h5>
+            <ul>
+                <li><strong>Plazos legales:</strong> Calcular los días entre fechas es útil para conocer el tiempo restante en plazos legales y contractuales.</li>
+                <li><strong>Gestión de proyectos:</strong> En proyectos, calcular los días transcurridos y los días restantes es fundamental para cumplir con las fechas límite.</li>
+                <li><strong>Calculadora de intereses:</strong> Al calcular los intereses de préstamos o inversiones, se requiere saber cuántos días han pasado.</li>
+                <li><strong>Planificación de vacaciones:</strong> Los empleados pueden calcular cuántos días hábiles tienen disponibles para vacaciones.</li>
+                <li><strong>Contabilidad:</strong> Las empresas necesitan calcular los días hábiles para facturación, impuestos y otros procesos contables.</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

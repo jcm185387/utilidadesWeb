@@ -1,0 +1,11 @@
+.qr-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.no-lines .list-group-item {
+    border: none; /* Elimina los bordes entre los elementos de la lista */
+}

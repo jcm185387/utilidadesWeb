@@ -1,0 +1,80 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Conversor de Unidades</h1>
+
+    <!-- Descripción, Metodología y Usos -->
+    <div class="mb-4">
+        <h3>Descripción</h3>
+        <p>
+            Este conversor permite al usuario convertir entre diferentes unidades de medida, 
+            como de metros a pies o viceversa, según las unidades disponibles en el formulario. 
+            Si el usuario intenta convertir la misma unidad (por ejemplo, metros a metros), 
+            se muestra un mensaje de error indicando que no se puede realizar la conversión.
+        </p>
+    </div>
+
+
+
+    <form method="POST" class="row">
+        {% csrf_token %}
+        
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="valor" class="form-label">Valor</label>
+                <input type="number" name="valor" id="valor" class="form-control" value="{{ valor }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="unidad_origen" class="form-label">Unidad de Origen</label>
+                <select name="unidad_origen" id="unidad_origen" class="form-select" required>
+                    <option value="metros" {% if unidad_origen == 'metros' %}selected{% endif %}>Metros</option>
+                    <option value="pies" {% if unidad_origen == 'pies' %}selected{% endif %}>Pies</option>
+                    <!-- Agregar más unidades si es necesario -->
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="unidad_destino" class="form-label">Unidad de Destino</label>
+                <select name="unidad_destino" id="unidad_destino" class="form-select" required>
+                    <option value="metros" {% if unidad_destino == 'metros' %}selected{% endif %}>Metros</option>
+                    <option value="pies" {% if unidad_destino == 'pies' %}selected{% endif %}>Pies</option>
+                    <!-- Agregar más unidades si es necesario -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Convertir</button>
+        </div>
+        
+        <!-- Mostramos el resultado o el mensaje de error -->
+        <div class="col-md-6">
+            {% if mensaje_error %}
+            <div class="alert alert-danger mt-4">
+                <p>{{ mensaje_error }}</p>
+            </div>
+            {% elif resultado %}
+            <div class="alert alert-success mt-4">
+                <h4>Resultado:</h4>
+                <p>{{ valor }} {{ unidad_origen }} = {{ resultado }} {{ unidad_destino }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+    <div class="mb-4">
+        <h3>Metodología</h3>
+        <ol>
+            <li>El usuario ingresa un valor y selecciona las unidades de origen y destino.</li>
+            <li>El sistema verifica si las unidades seleccionadas son iguales; si es así, muestra un error.</li>
+            <li>Si las unidades son diferentes, se realiza la conversión.</li>
+            <li>El resultado de la conversión se muestra al usuario.</li>
+        </ol>
+    </div>
+
+    <div class="mb-4">
+        <h3>Usos</h3>
+        <p>
+            Este conversor puede ser utilizado en diversas aplicaciones donde se necesiten convertir
+            unidades de medida como metros, pies, kilómetros, millas, etc. Es útil en ámbitos como
+            la ciencia, la ingeniería y la educación.
+        </p>
+    </div>
+</div>
+{% endblock %}

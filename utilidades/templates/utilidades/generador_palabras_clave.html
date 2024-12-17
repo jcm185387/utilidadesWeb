@@ -1,0 +1,41 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Generador de Palabras Clave SEO</h1>
+
+        <!-- Breve descripción antes del formulario -->
+        <p>Introduce un texto relacionado con tu contenido, y este generador te ayudará a identificar palabras clave que podrían ser útiles para optimizarlo en motores de búsqueda. ¡Es rápido y fácil de usar!</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea name="texto" class="form-control" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Generar Palabras</button>
+        </form>
+
+        {% if palabras_generadas %}
+            <div class="mt-3">
+                <h5>Palabras clave generadas:</h5>
+                <ul>
+                    {% for palabra in palabras_generadas %}
+                        <li>{{ palabra }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Explicación de la metodología -->
+        <div class="mt-4">
+            <h6>¿Cómo funciona el generador?</h6>
+            <p>El generador analiza el texto que ingresaste para encontrar palabras o frases que podrían captar la atención en búsquedas web. Aquí tienes una explicación sencilla:</p>
+            <ul>
+                <li>Primero, examina las palabras más importantes del texto para identificar términos relevantes.</li>
+                <li>Busca combinaciones y patrones comunes que suelen ser útiles en SEO.</li>
+                <li>Prioriza las palabras que tienen más posibilidades de ser buscadas por los usuarios.</li>
+            </ul>
+            <p>El resultado son sugerencias que puedes utilizar para mejorar la visibilidad de tu contenido en buscadores.</p>
+        </div>
+    </div>
+{% endblock %}

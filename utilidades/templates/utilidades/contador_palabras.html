@@ -1,0 +1,37 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Contador de Palabras y Caracteres</h1>
+
+        <!-- Breve descripción antes de capturar el texto -->
+        <p>Introduce un texto en el cuadro de abajo y el contador calculará el número de palabras y caracteres que contiene. Esto es útil para medir la extensión de tu contenido.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea name="texto" class="form-control" rows="5">{{ texto }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Contar</button>
+        </form>
+
+        {% if num_palabras is not None %}
+            <div class="mt-3">
+                <p><strong>Número de palabras:</strong> {{ num_palabras }}</p>
+                <p><strong>Número de caracteres:</strong> {{ num_caracteres }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Metodología de comprobación -->
+        <div class="mt-4">
+            <h6>Metodología de Cálculo:</h6>
+            <p>El contador de palabras y caracteres realiza lo siguiente:</p>
+            <ul>
+                <li>El texto ingresado se divide en palabras usando los espacios como separadores.</li>
+                <li>Se cuenta el número total de palabras, considerando cada grupo de caracteres separado por espacios.</li>
+                <li>También se cuentan los caracteres del texto, incluyendo letras, números, espacios y signos de puntuación.</li>
+                <li>El resultado final muestra tanto el número de palabras como el número de caracteres.</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

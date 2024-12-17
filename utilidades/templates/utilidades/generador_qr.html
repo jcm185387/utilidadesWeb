@@ -1,0 +1,63 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Generador de Código QR</h1>
+    <p>
+        Los códigos QR son herramientas modernas que facilitan el acceso rápido a información. 
+        Simplemente escanea con tu celular y accede al contenido sin tener que escribir nada. 
+        Generar tu propio código QR es más fácil de lo que imaginas: ¡pruébalo aquí!
+    </p>
+    
+    <div class="row">
+        <!-- Columna izquierda: Formulario -->
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="texto">Ingresa el texto o enlace que quieras convertir en un código QR:</label>
+                    <textarea id="texto" name="texto" class="form-control" rows="5" required placeholder="Escribe aquí..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Generar QR</button>
+            </form>
+        </div>
+
+        <!-- Columna derecha: Resultado del QR -->
+        <div class="col-md-6">
+            {% if qr_code %}
+            <div class="qr-result">
+                <h5>Tu Código QR</h5>
+                <p>
+                    Escanea este código QR con tu teléfono o compártelo con otras personas. 
+                    Es una manera rápida de compartir enlaces, texto o cualquier dato que desees.
+                </p>
+                <p><strong>Texto o enlace:</strong> {{ texto }}</p>
+                <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR generado" class="img-fluid" />
+            </div>
+            {% else %}
+            <div class="text-center">
+                <p>No se ha generado ningún QR todavía. Ingresa un texto o enlace para empezar.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Explicación más accesible debajo -->
+    <div class="mt-4">
+        <h5>¿Cómo funciona este generador de códigos QR?</h5>
+        <p>
+            Cuando ingresas texto o un enlace en el cuadro de arriba y presionas "Generar QR", 
+            nuestro sistema crea una imagen única que representa esa información. 
+            Al escanear este código con la cámara de tu celular, podrás ver el texto o ser dirigido al enlace. 
+            Es perfecto para compartir mensajes, direcciones web, o cualquier información de manera rápida y sencilla.
+        </p>
+        <h5>¿Dónde puedo usar los códigos QR?</h5>
+        <ul>
+            <li><strong>Eventos:</strong> Comparte información sobre tus eventos con facilidad.</li>
+            <li><strong>Negocios:</strong> Facilita a tus clientes el acceso a tu página web o menú.</li>
+            <li><strong>Contactos:</strong> Agrega tu información personal o profesional.</li>
+            <li><strong>Creatividad:</strong> Envía mensajes secretos o sorpresas a tus amigos.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

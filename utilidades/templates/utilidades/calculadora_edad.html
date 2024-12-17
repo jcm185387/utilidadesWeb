@@ -1,0 +1,62 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título y descripción -->
+    <h1 class="text-center mb-4">Calculadora de Edad</h1>
+    <p class="text-center">Ingresa tu fecha de nacimiento y otra fecha para calcular la edad exacta en años, meses y días.</p>
+
+    <!-- Formulario y Resultado al lado -->
+    <div class="row justify-content-center">
+        <!-- Formulario -->
+        <div class="col-md-6">
+            <div class="card shadow p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" 
+                               class="form-control" required 
+                               value="{{ fecha_nacimiento|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_fin" class="form-label">Fecha Final</label>
+                        <input type="date" id="fecha_fin" name="fecha_fin" 
+                               class="form-control" required 
+                               value="{{ fecha_fin|default:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Calcular</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="col-md-6">
+            {% if resultado %}
+                <div class="card shadow p-4">
+                    <h5>Resultado</h5>
+                    <p><strong>Edad:</strong> {{ resultado.anios }} años, {{ resultado.meses }} meses, y {{ resultado.dias }} días.</p>
+                    <p><strong>Total en días:</strong> {{ resultado.total_dias }} días.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Metodología y Explicación -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <div class="card shadow p-4">
+                <h3 class="text-center mb-4">Metodología y Explicación</h3>
+                <p>El cálculo de la edad se realiza en base a las fechas proporcionadas mediante los siguientes pasos:</p>
+                <ol>
+                    <li><strong>Comparación de años:</strong> Se calcula la diferencia de años entre las dos fechas.</li>
+                    <li><strong>Comparación de meses:</strong> Si el mes de la fecha final es menor que el mes de nacimiento, se resta un año al cálculo y se ajusta la diferencia de meses.</li>
+                    <li><strong>Cálculo de días:</strong> Se comparan los días de ambos meses. Si el día final es menor que el día de nacimiento, se resta un mes al cálculo y se ajusta el número de días.</li>
+                    <li><strong>Total de días:</strong> Se realiza una conversión adicional para determinar el número total de días transcurridos.</li>
+                </ol>
+                <p>Esta metodología asegura un cálculo preciso, teniendo en cuenta años bisiestos y la duración variable de los meses.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

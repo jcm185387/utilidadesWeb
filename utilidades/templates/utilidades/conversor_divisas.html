@@ -1,0 +1,77 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Conversor de Divisas</h1>
+    
+    <!-- Descripción de la página -->
+    <div class="mb-4">
+        <h4>Descripción</h4>
+        <p>
+            El Conversor de Divisas es una herramienta diseñada para ayudar a los usuarios a convertir montos de dinero entre distintas monedas internacionales. 
+            Utilizando tasas de cambio en tiempo real, esta herramienta permite conocer cuánto valen en una moneda destino ciertos montos de una moneda origen. 
+            Puedes elegir entre varias monedas, como USD, EUR, MXN, entre otras, para realizar tus conversiones rápidamente.
+        </p>
+    </div>
+
+
+
+    <form method="POST" class="row">
+        {% csrf_token %}
+        
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="cantidad" class="form-label">Cantidad</label>
+                <input type="number" name="cantidad" id="cantidad" class="form-control" value="{{ cantidad }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="moneda_origen" class="form-label">Moneda de Origen</label>
+                <select name="moneda_origen" id="moneda_origen" class="form-select" required>
+                    {% for moneda in monedas_disponibles %}
+                        <option value="{{ moneda }}" {% if moneda_origen == moneda %}selected{% endif %}>{{ moneda }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="moneda_destino" class="form-label">Moneda de Destino</label>
+                <select name="moneda_destino" id="moneda_destino" class="form-select" required>
+                    {% for moneda in monedas_disponibles %}
+                        <option value="{{ moneda }}" {% if moneda_destino == moneda %}selected{% endif %}>{{ moneda }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Convertir</button>
+        </div>
+        
+        <!-- Mostramos el resultado a la derecha -->
+        <div class="col-md-6">
+            {% if mensaje_error %}
+            <div class="alert alert-danger mt-4">
+                <p>{{ mensaje_error }}</p>
+            </div>
+            {% elif resultado %}
+            <div class="alert alert-success mt-4">
+                <h4>Resultado:</h4>
+                <p>{{ cantidad }} {{ moneda_origen }} = {{ resultado }} {{ moneda_destino }}</p>
+                <p><strong>Tasa de cambio:</strong> {{ tasa }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+        <!-- Metodología -->
+    <div class="mb-4">
+        <h4>Metodología</h4>
+        <p>
+            El proceso para realizar una conversión de divisas en esta herramienta es sencillo y se realiza en tres pasos:
+        </p>
+        <ul>
+            <li><strong>Selecciona la moneda de origen:</strong> Escoge la moneda de la que deseas convertir el monto. Ejemplo: USD (Dólar estadounidense).</li>
+            <li><strong>Selecciona la moneda de destino:</strong> Escoge la moneda a la que deseas convertir. Ejemplo: EUR (Euro).</li>
+            <li><strong>Introduce la cantidad:</strong> Escribe el monto que quieres convertir, por ejemplo, 100.</li>
+        </ul>
+        <p>
+            Una vez que hayas ingresado todos los datos, haz clic en "Convertir" y la herramienta mostrará el monto convertido y la tasa de cambio utilizada.
+        </p>
+    </div>
+</div>
+{% endblock %}

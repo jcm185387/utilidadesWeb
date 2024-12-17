@@ -1,0 +1,86 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="padding-bottom: 250px;">
+    <h1 class="text-center mb-4">Generador de CURP Falso</h1>
+    
+    <!-- Descripción principal -->
+    <div class="alert alert-info">
+        <p>La Clave Única de Registro de Población (CURP) es un identificador único que se utiliza en México para registrar oficialmente a las personas en diversas bases de datos gubernamentales. Esta clave se genera con base en información personal como tu nombre, fecha de nacimiento, sexo y estado de nacimiento.</p>
+    </div>
+    
+    <!-- Contenedor de Formulario y Resultado -->
+    <div class="row">
+        <!-- Formulario -->
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ejemplo: Juan" required>
+                </div>
+                <div class="mb-3">
+                    <label for="apellido_paterno" class="form-label">Apellido Paterno</label>
+                    <input type="text" name="apellido_paterno" id="apellido_paterno" class="form-control" placeholder="Ejemplo: Pérez" required>
+                </div>
+                <div class="mb-3">
+                    <label for="apellido_materno" class="form-label">Apellido Materno</label>
+                    <input type="text" name="apellido_materno" id="apellido_materno" class="form-control" placeholder="Ejemplo: García" required>
+                </div>
+                <div class="mb-3">
+                    <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="sexo" class="form-label">Sexo</label>
+                    <select name="sexo" id="sexo" class="form-select" required>
+                        <option value="H">Hombre</option>
+                        <option value="M">Mujer</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select name="estado" id="estado" class="form-select" required>
+                        <option value="" disabled selected>Seleccione un estado</option>
+                        {% for estado in estados %}
+                        <option value="{{ estado.codigo }}">{{ estado.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Generar CURP</button>
+            </form>
+        </div>
+
+        <!-- CURP Generado -->
+        <div class="col-md-6">
+            {% if curp %}
+            <div class="alert alert-success">
+                <h4>CURP Generado:</h4>
+                <p class="fw-bold">{{ curp }}</p>
+                <p class="text-muted">
+                    Esta CURP ficticia fue creada basándose en los datos ingresados. Los primeros caracteres representan tus apellidos y nombre; los números reflejan tu fecha de nacimiento; y los códigos restantes son generados siguiendo un formato estándar.
+                </p>
+                <p class="text-muted">Puedes usar este CURP para pruebas o fines educativos.</p>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <p>Ingrese los datos en el formulario para generar un CURP.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Metodología -->
+    <div class="alert alert-secondary mt-4">
+        <h4>Metodología de Generación de CURP</h4>
+        <ul>
+            <li>Las primeras letras se derivan de tus apellidos y nombre.</li>
+            <li>Los números intermedios corresponden a tu fecha de nacimiento en formato: **AAMMDD**.</li>
+            <li>Se incluye una letra que indica tu sexo: **H** para hombre, **M** para mujer.</li>
+            <li>Se añade un código que representa tu estado de nacimiento.</li>
+            <li>Los últimos caracteres son generados aleatoriamente para completar el formato.</li>
+        </ul>
+        <p><strong>Nota:</strong> Este generador no produce CURP válidas para uso oficial. Su único propósito es educativo y recreativo.</p>
+    </div>
+</div>
+{% endblock %}

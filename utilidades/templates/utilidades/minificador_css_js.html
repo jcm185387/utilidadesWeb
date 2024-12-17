@@ -1,0 +1,58 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título y descripción inicial -->
+    <h1>Minificador de Archivos CSS/JS</h1>
+    <p>
+        El minificado de archivos es una técnica utilizada para optimizar el rendimiento de sitios web. 
+        Simplifica archivos como CSS y JavaScript al eliminar espacios, comentarios y caracteres innecesarios, 
+        haciendo que las páginas carguen más rápido. Aquí puedes cargar tus archivos y optimizarlos fácilmente.
+    </p>
+
+    <!-- Formulario para subir el archivo -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="archivo">Selecciona un archivo CSS o JavaScript que desees optimizar:</label>
+            <input type="file" name="archivo" class="form-control" accept=".css, .js" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Minificar</button>
+    </form>
+
+    <!-- Resultado: archivo minificado -->
+    {% if minificado %}
+        <div class="mt-3">
+            <h5>Resultado: Tu Archivo Minificado</h5>
+            <p>
+                El archivo ha sido optimizado con éxito. A continuación, puedes copiar el contenido minificado 
+                y usarlo directamente en tu proyecto. 
+            </p>
+            <textarea class="form-control" rows="10">{{ minificado }}</textarea>
+        </div>
+    {% endif %}
+
+    <!-- Explicación más accesible -->
+    <div class="mt-4">
+        <h5>¿Qué es la minificación y por qué es importante?</h5>
+        <p>
+            La minificación reduce el tamaño de los archivos CSS y JavaScript al eliminar todo lo que no es 
+            esencial para que el archivo funcione, como espacios, saltos de línea y comentarios. 
+            Esto hace que los archivos sean más pequeños y rápidos de cargar, mejorando la experiencia 
+            del usuario y el rendimiento del sitio web.
+        </p>
+        <h5>Beneficios del minificado:</h5>
+        <ul>
+            <li><strong>Velocidad:</strong> Las páginas web se cargan más rápido.</li>
+            <li><strong>Optimización:</strong> Ideal para mejorar el rendimiento en dispositivos móviles.</li>
+            <li><strong>Eficiencia:</strong> Reduce el uso de datos y ancho de banda.</li>
+        </ul>
+        <h5>¿Cómo usar este minificador?</h5>
+        <p>
+            Simplemente selecciona un archivo CSS o JavaScript desde tu computadora y presiona "Minificar". 
+            El sistema hará todo el trabajo por ti y generará una versión optimizada del archivo que puedes 
+            usar directamente en tu proyecto.
+        </p>
+    </div>
+</div>
+{% endblock %}

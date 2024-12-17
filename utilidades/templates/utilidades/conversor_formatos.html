@@ -1,0 +1,56 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Conversor de Formatos de Archivos</h1>
+
+    <!-- Descripción inicial -->
+    <p>
+        Este conversor de formatos de archivos es una herramienta versátil que permite transformar tus documentos, imágenes o archivos multimedia a formatos compatibles con tus necesidades. 
+        Ideal para estudiantes, profesionales y creativos, este servicio facilita el acceso a formatos adaptados a plataformas específicas, reduciendo complicaciones al momento de compartir o editar tus archivos.
+    </p>
+
+    <!-- Metodología -->
+    <h3 class="mt-4">¿Cómo funciona?</h3>
+    <ol>
+        <li>Selecciona un archivo desde tu dispositivo utilizando el formulario de abajo.</li>
+        <li>Haz clic en "Convertir" para procesar el archivo.</li>
+        <li>Obtendrás un enlace o mensaje con el archivo convertido, listo para descargar o usar.</li>
+    </ol>
+
+    <!-- Usos comunes -->
+    <h3 class="mt-4">¿Para qué sirve?</h3>
+    <ul>
+        <li><strong>Convertir documentos:</strong> Cambia entre formatos como PDF, DOCX, TXT y más para mejorar la compatibilidad con herramientas de edición.</li>
+        <li><strong>Imágenes:</strong> Transforma formatos como JPG, PNG y SVG para proyectos web o de impresión.</li>
+        <li><strong>Multimedia:</strong> Ajusta formatos de video (MP4, AVI, MKV) o audio (MP3, WAV) según tus necesidades.</li>
+        <li><strong>Compresión:</strong> Reduce el tamaño de tus archivos para facilitar su envío por correo electrónico o almacenamiento en línea.</li>
+    </ul>
+
+    <!-- Formulario de conversión -->
+    <form method="POST" enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="archivo" class="form-label">Selecciona un archivo</label>
+            <input type="file" name="archivo" id="archivo" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Convertir</button>
+    </form>
+
+    <!-- Resultado de la conversión -->
+    {% if resultado %}
+    <div class="alert alert-success mt-4">
+        <h4>Resultado:</h4>
+        <p>{{ resultado }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Notas adicionales -->
+    <h3 class="mt-4">Notas Importantes</h3>
+    <ul>
+        <li><strong>Privacidad:</strong> Tus archivos son procesados de manera segura y no se almacenan en nuestros servidores.</li>
+        <li><strong>Limitaciones:</strong> Actualmente, el tamaño máximo de los archivos es de 50 MB.</li>
+        <li><strong>Compatibilidad:</strong> Asegúrate de que el formato de entrada sea compatible con nuestras herramientas de conversión.</li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Corrector Ortográfico</h1>
+
+        <!-- Breve descripción antes de capturar el texto -->
+        <p>Introduce un texto y el corrector ortográfico intentará corregir cualquier error en las palabras. Si el texto contiene errores, los corregirá automáticamente.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea name="texto" class="form-control" rows="5">{{ texto }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Corregir</button>
+        </form>
+
+        {% if corregido %}
+            <div class="mt-3">
+                <h5>Texto corregido:</h5>
+                <p>{{ corregido }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Metodología de comprobación ortográfica -->
+        <div class="mt-4">
+            <h6>¿Cómo funciona el corrector?</h6>
+            <p>El corrector revisa las palabras del texto y las compara con una lista de palabras bien escritas. Si encuentra alguna palabra que no coincide, busca una alternativa que sea más parecida y la sugiere como corrección.</p>
+            <ul>
+                <li>Primero, separa el texto en palabras para analizarlas una por una.</li>
+                <li>Revisa si cada palabra aparece en su base de datos de palabras correctas en español.</li>
+                <li>Cuando encuentra un error, elige la opción que mejor se acerca a la palabra original.</li>
+                <li>Si no encuentra una corrección adecuada, deja la palabra como está.</li>
+            </ul>
+            <p>El objetivo es ayudarte a mejorar tus textos de forma rápida y sencilla.</p>
+        </div>
+    </div>
+{% endblock %}

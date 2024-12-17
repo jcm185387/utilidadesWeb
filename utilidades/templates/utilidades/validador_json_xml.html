@@ -1,0 +1,50 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Descripción introductoria -->
+    <h1 class="text-center mb-4">Validador de JSON y XML</h1>
+    <p class="text-center">¿Tienes un archivo o fragmento de texto en formato JSON o XML y quieres asegurarte de que sea válido? Este validador te ayudará a comprobar si el formato es correcto, ahorrándote problemas al trabajar con estos tipos de datos.</p>
+
+    <!-- Formulario -->
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="texto">Ingresa aquí el texto JSON o XML:</label>
+            <textarea name="texto" class="form-control" rows="5" placeholder="Escribe o pega el contenido aquí..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Validar</button>
+    </form>
+    <!-- Errores -->
+    {% if errores %}
+    <div class="mt-3 alert alert-danger">
+        <strong>Errores detectados:</strong>
+        <ul>
+            {% for error in errores %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <!-- Resultado -->
+    {% if resultado %}
+        <div class="mt-4">
+            <h5>Resultado de la Validación:</h5>
+            <p class="alert {% if resultado_valido %}alert-success{% else %}alert-danger{% endif %}">
+                {{ resultado }}
+            </p>
+        </div>
+    {% endif %}
+
+    <!-- Explicación adicional -->
+    <div class="mt-5">
+        <h5>¿Cómo funciona este validador?</h5>
+        <p>El validador revisa el texto que ingresas para asegurarse de que siga las reglas específicas de JSON o XML:</p>
+        <ul>
+            <li><strong>JSON:</strong> Verifica que los objetos, arrays, cadenas y otros elementos cumplan con las normas del formato.</li>
+            <li><strong>XML:</strong> Comprueba que las etiquetas estén correctamente abiertas y cerradas, y que no haya errores en la estructura.</li>
+        </ul>
+        <p>Este proceso es útil para asegurarte de que tus datos sean interpretados correctamente por aplicaciones o sistemas que usen estos formatos.</p>
+    </div>
+</div>
+{% endblock %}
