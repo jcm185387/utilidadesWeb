@@ -414,8 +414,6 @@ def generador_contrasenas(request):
 
 
 
-import requests
-
 # Replace with your API key
 API_KEY = 'a8cdeeeefba3e029825fa812'
 API_URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest"
@@ -495,6 +493,13 @@ def conversor_formatos(request):
 def conversor_unidades(request):
     resultado = None
     mensaje_error = None  # Inicializamos la variable para el mensaje de error
+
+        # Inicializamos las variables con valores predeterminados
+    valor = 0
+    unidad_origen = 'metros'
+    unidad_destino = 'pies'
+
+    
     if request.method == 'POST':
         valor = float(request.POST.get('valor', 0))
         unidad_origen = request.POST.get('unidad_origen')
