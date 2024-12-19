@@ -417,11 +417,13 @@ def generador_contrasenas(request):
 # Replace with your API key
 API_KEY = 'a8cdeeeefba3e029825fa812'
 API_URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest"
-
+API_URLCODES = f"https://v6.exchangerate-api.com/v6/{API_KEY}"
+'''
 def obtener_monedas_disponibles():
     response = requests.get(f"{API_URL}/USD")  # Usamos USD como base
     if response.status_code == 200:
         data = response.json()
+        ##print(data)
         if "conversion_rates" in data:
             return list(data["conversion_rates"].keys())  # Obtener todas las monedas disponibles
     return []
@@ -439,6 +441,235 @@ def conversor_divisas(request):
     mensaje_error = None
     monedas_disponibles = obtener_monedas_disponibles()  # Obtener las monedas disponibles al cargar el formulario
 
+    if request.method == 'POST':
+        # Obtener los parámetros del formulario
+        moneda_origen = request.POST.get('moneda_origen')
+        moneda_destino = request.POST.get('moneda_destino')
+        cantidad = float(request.POST.get('cantidad'))
+
+        # Verificar que las monedas no sean iguales
+        if moneda_origen == moneda_destino:
+            mensaje_error = "La moneda origen no puede ser igual a la moneda destino."
+        else:
+            # Consultar el tipo de cambio
+            tasa = obtener_tipo_cambio(moneda_origen, moneda_destino)
+
+            if tasa is None:
+                mensaje_error = "Error al obtener la tasa de cambio. Intenta más tarde."
+            else:
+                # Realizar la conversión
+                resultado = cantidad * tasa
+                return render(request, 'utilidades/conversor_divisas.html', {
+                    'moneda_origen': moneda_origen,
+                    'moneda_destino': moneda_destino,
+                    'cantidad': cantidad,
+                    'resultado': resultado,
+                    'tasa': tasa,
+                    'mensaje_error': mensaje_error,
+                    'monedas_disponibles': monedas_disponibles
+                })
+
+    # Si hay un error o no se ha enviado el formulario, renderizamos el formulario original
+    return render(request, 'utilidades/conversor_divisas.html', {
+        'mensaje_error': mensaje_error,
+        'moneda_origen': 'USD',  # Moneda por defecto
+        'moneda_destino': 'MXN',  # Moneda por defecto
+        'cantidad': 0,
+        'monedas_disponibles': monedas_disponibles
+    })
+'''
+MONEDAS_EN_ES = {
+    "AED": "Dirham de los Emiratos Árabes Unidos",
+    "AFN": "Afghani afgano",
+    "ALL": "Lek albanés",
+    "AMD": "Drama armenio",
+    "ANG": "Florín antillano neerlandés",
+    "AOA": "Kwanza angoleña",
+    "ARS": "Peso argentino",
+    "AUD": "Dólar australiano",
+    "AWG": "Florenio arubeño",
+    "AZN": "Manat azerbaiyano",
+    "BAM": "Marco convertible de Bosnia y Herzegovina",
+    "BBD": "Dólar barbadeño",
+    "BDT": "Taka bangladesí",
+    "BGN": "Lev búlgaro",
+    "BHD": "Dinar bahreiní",
+    "BIF": "Franco burundés",
+    "BMD": "Dólar bermudeño",
+    "BND": "Dólar bruneano",
+    "BOB": "Boliviano boliviano",
+    "BRL": "Real brasileño",
+    "BSD": "Dólar bahameño",
+    "BTN": "Ngultrum bhutanés",
+    "BWP": "Pula botsuano",
+    "BYN": "Rublo bielorruso",
+    "BZD": "Dólar beliceño",
+    "CAD": "Dólar canadiense",
+    "CDF": "Franco congoleño",
+    "CHF": "Franco suizo",
+    "CLP": "Peso chileno",
+    "CNY": "Renminbi chino",
+    "COP": "Peso colombiano",
+    "CRC": "Colón costarricense",
+    "CUP": "Peso cubano",
+    "CVE": "Escudo caboverdiano",
+    "CZK": "Corona checa",
+    "DJF": "Franco yibutiano",
+    "DKK": "Corona danesa",
+    "DOP": "Peso dominicano",
+    "DZD": "Dinar argelino",
+    "EGP": "Libra egipcia",
+    "ERN": "Nakfa eritreo",
+    "ETB": "Birr etíope",
+    "EUR": "Euro",
+    "FJD": "Dólar fiyiano",
+    "FKP": "Libra de las Islas Malvinas",
+    "FOK": "Corona de las Islas Feroe",
+    "GBP": "Libra esterlina",
+    "GEL": "Lari georgiano",
+    "GGP": "Libra de Guernsey",
+    "GHS": "Cedi ghanés",
+    "GIP": "Libra de Gibraltar",
+    "GMD": "Dalasi gambiano",
+    "GNF": "Franco guineano",
+    "GTQ": "Quetzal guatemalteco",
+    "GYD": "Dólar guyanés",
+    "HKD": "Dólar de Hong Kong",
+    "HNL": "Lempira hondureña",
+    "HRK": "Kuna croata",
+    "HTG": "Gourde haitiano",
+    "HUF": "Forinto húngaro",
+    "IDR": "Rupia indonesia",
+    "ILS": "Nuevo shekel israelí",
+    "IMP": "Libra de la Isla de Man",
+    "INR": "Rupia india",
+    "IQD": "Dinar iraquí",
+    "IRR": "Rial iraní",
+    "ISK": "Corona islandesa",
+    "JEP": "Libra de Jersey",
+    "JMD": "Dólar jamaiquino",
+    "JOD": "Dinar jordano",
+    "JPY": "Yen japonés",
+    "KES": "Chelín keniano",
+    "KGS": "Som kirguís",
+    "KHR": "Riel camboyano",
+    "KID": "Dólar de Kiribati",
+    "KMF": "Franco comorano",
+    "KRW": "Won surcoreano",
+    "KWD": "Dinar kuwaití",
+    "KYD": "Dólar de las Islas Caimán",
+    "KZT": "Tenge kazajo",
+    "LAK": "Kip laosiano",
+    "LBP": "Libra libanesa",
+    "LKR": "Rupia de Sri Lanka",
+    "LRD": "Dólar liberiano",
+    "LSL": "Loti de Lesoto",
+    "LYD": "Dinar libio",
+    "MAD": "Dirham marroquí",
+    "MDL": "Leu moldavo",
+    "MGA": "Ariary malgache",
+    "MKD": "Denar macedonio",
+    "MMK": "Kyat birmano",
+    "MNT": "Tögrög mongol",
+    "MOP": "Pataca macanesa",
+    "MRU": "Ouguiya mauritano",
+    "MUR": "Rupia mauriciana",
+    "MVR": "Rufiyaa maldivo",
+    "MWK": "Kwacha malawiano",
+    "MXN": "Peso mexicano",
+    "MYR": "Ringgit malayo",
+    "MZN": "Metical mozambiqueño",
+    "NAD": "Dólar namibio",
+    "NGN": "Naira nigeriana",
+    "NIO": "Córdoba nicaragüense",
+    "NOK": "Corona noruega",
+    "NPR": "Rupia nepalí",
+    "NZD": "Dólar neozelandés",
+    "OMR": "Rial omaní",
+    "PAB": "Balboa panameño",
+    "PEN": "Sol peruano",
+    "PGK": "Kina papú de Nueva Guinea",
+    "PHP": "Peso filipino",
+    "PKR": "Rupia pakistaní",
+    "PLN": "Zloty polaco",
+    "PYG": "Guaraní paraguayo",
+    "QAR": "Riyal qatarí",
+    "RON": "Leu rumano",
+    "RSD": "Dinar serbio",
+    "RUB": "Rublo ruso",
+    "RWF": "Franco ruandés",
+    "SAR": "Riyal saudí",
+    "SBD": "Dólar de las Islas Salomón",
+    "SCR": "Rupia seychellense",
+    "SDG": "Libra sudanesa",
+    "SEK": "Corona sueca",
+    "SGD": "Dólar singapurense",
+    "SHP": "Libra de Santa Elena",
+    "SLE": "León de Sierra Leona",
+    "SLL": "León de Sierra Leona",
+    "SOS": "Chelín somalí",
+    "SRD": "Dólar surinamés",
+    "SSP": "Libra sursudanesa",
+    "STN": "Dobra de Santo Tomé y Príncipe",
+    "SYP": "Libra siria",
+    "SZL": "Lilangeni de Eswatini",
+    "THB": "Baht tailandés",
+    "TJS": "Somoni tayiko",
+    "TMT": "Manat turcomano",
+    "TND": "Dinar tunecino",
+    "TOP": "Paʻanga tongano",
+    "TRY": "Lira turca",
+    "TTD": "Dólar de Trinidad y Tobago",
+    "TVD": "Dólar tuvaluano",
+    "TWD": "Nuevo dólar taiwanés",
+    "TZS": "Chelín tanzano",
+    "UAH": "Hryvnia ucraniana",
+    "UGX": "Chelín ugandés",
+    "USD": "Dólar estadounidense",
+    "UYU": "Peso uruguayo",
+    "UZS": "So'm uzbeko",
+    "VES": "Bolívar venezolano soberano",
+    "VND": "Dong vietnamita",
+    "VUV": "Vatu vanuatuense",
+    "WST": "Tālā samoano",
+    "XAF": "Franco CFA central africano",
+    "XCD": "Dólar del Caribe oriental",
+    "XDR": "Derechos especiales de giro",
+    "XOF": "Franco CFA de África Occidental",
+    "XPF": "Franco CFP",
+    "YER": "Rial yemení",
+    "ZAR": "Rand sudafricano",
+    "ZMW": "Kwacha zambiano",
+    "ZWL": "Dólar zimbabuense"
+}
+
+def obtener_monedas_disponibles():
+    response = requests.get(f"{API_URLCODES}/codes")  # Obtener los códigos de las monedas
+    if response.status_code == 200:
+        data = response.json()
+        if "supported_codes" in data:
+            # Convertimos la lista de listas en un diccionario
+            monedas_dict = {codigo: descripcion for codigo, descripcion in data["supported_codes"]}
+            # Traducimos las descripciones al español usando el diccionario
+            monedas_traducidas = {codigo: MONEDAS_EN_ES.get(codigo, descripcion) 
+                                  for codigo, descripcion in monedas_dict.items()}
+            return monedas_traducidas  # Devolvemos el diccionario con las descripciones en español
+    return {}
+
+
+def obtener_tipo_cambio(moneda_origen, moneda_destino):
+    # Obtener el tipo de cambio entre las dos monedas seleccionadas
+    response = requests.get(f"{API_URL}/{moneda_origen}")
+    if response.status_code == 200:
+        data = response.json()
+        if "conversion_rates" in data and moneda_destino in data["conversion_rates"]:
+            return data["conversion_rates"][moneda_destino]
+    return None
+
+def conversor_divisas(request):
+    mensaje_error = None
+    monedas_disponibles = obtener_monedas_disponibles()  # Obtener las monedas disponibles
+    ##print(monedas_disponibles)
     if request.method == 'POST':
         # Obtener los parámetros del formulario
         moneda_origen = request.POST.get('moneda_origen')

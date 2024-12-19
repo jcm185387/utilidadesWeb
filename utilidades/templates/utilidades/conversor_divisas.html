@@ -14,29 +14,30 @@
         </p>
     </div>
 
-
-
     <form method="POST" class="row">
         {% csrf_token %}
         
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="cantidad" class="form-label">Cantidad</label>
-                <input type="number" name="cantidad" id="cantidad" class="form-control" value="{{ cantidad }}" required>
+                <input type="number" min="1" name="cantidad" id="cantidad" class="form-control" value="{{ cantidad }}" required>
             </div>
             <div class="mb-3">
                 <label for="moneda_origen" class="form-label">Moneda de Origen</label>
                 <select name="moneda_origen" id="moneda_origen" class="form-select" required>
-                    {% for moneda in monedas_disponibles %}
-                        <option value="{{ moneda }}" {% if moneda_origen == moneda %}selected{% endif %}>{{ moneda }}</option>
+                    {% for moneda, descripcion in monedas_disponibles.items %}
+                        <option value="{{ moneda }}" {% if moneda_origen == moneda %}selected{% endif %}>
+                            {{ moneda }} - {{ descripcion }}
+                        </option>
                     {% endfor %}
                 </select>
+                
             </div>
             <div class="mb-3">
                 <label for="moneda_destino" class="form-label">Moneda de Destino</label>
                 <select name="moneda_destino" id="moneda_destino" class="form-select" required>
-                    {% for moneda in monedas_disponibles %}
-                        <option value="{{ moneda }}" {% if moneda_destino == moneda %}selected{% endif %}>{{ moneda }}</option>
+                    {% for moneda, descripcion in monedas_disponibles.items %}
+                        <option value="{{ moneda }}" {% if moneda_destino == moneda %}selected{% endif %}>{{ moneda }} - {{ descripcion }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -58,7 +59,8 @@
             {% endif %}
         </div>
     </form>
-        <!-- Metodología -->
+
+    <!-- Metodología -->
     <div class="mb-4">
         <h4>Metodología</h4>
         <p>
