@@ -1,0 +1,123 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Cálculo de Gasto en Gasolina para Viajes</h1>
+    <!-- Descripción -->
+    <div class="mt-5">
+        <h3>Descripción</h3>
+        <p>
+            Esta herramienta permite calcular el gasto estimado en gasolina para realizar un viaje, 
+            considerando la distancia a recorrer, el rendimiento del vehículo y el tipo de gasolina seleccionada (Premium o Magna).
+        </p>
+    </div>
+    <div class="row">
+        <!-- Formulario a la izquierda -->
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Distancia y rendimiento -->
+                <div class="mb-3">
+                    <label for="distancia" class="form-label">Distancia a recorrer (km)</label>
+                    <input type="number" name="distancia" id="distancia" class="form-control" value="{{ distancia }}" min="1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="rendimiento" class="form-label">Rendimiento del vehículo (km/l)</label>
+                    <input type="number" name="rendimiento" id="rendimiento" class="form-control" value="{{ rendimiento }}" min="1" required>
+                </div>
+
+                <!-- Tipo de gasolina -->
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="usar_premium" name="usar_premium" {% if precio_premium %}checked{% endif %} onchange="togglePrecio('premium')">
+                    <label for="usar_premium" class="form-check-label">Usar gasolina Premium</label>
+                </div>
+                <div class="mb-3" id="precio_premium_group" style="display: none;">
+                    <label for="precio_premium" class="form-label">Precio de gasolina Premium (por litro)</label>
+                    <input type="number" name="precio_premium" id="precio_premium" class="form-control" value="{{ precio_premium }}" step="0.01" min="0">
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="usar_magna" name="usar_magna" {% if precio_magna %}checked{% endif %} onchange="togglePrecio('magna')">
+                    <label for="usar_magna" class="form-check-label">Usar gasolina Magna</label>
+                </div>
+                <div class="mb-3" id="precio_magna_group" style="display: none;">
+                    <label for="precio_magna" class="form-label">Precio de gasolina Magna (por litro)</label>
+                    <input type="number" name="precio_magna" id="precio_magna" class="form-control" value="{{ precio_magna }}" step="0.01" min="0">
+                </div>
+
+                <!-- Botón de calcular -->
+                <button type="submit" class="btn btn-primary w-100">Calcular</button>
+            </form>
+        </div>
+
+        <!-- Resultado a la derecha -->
+        <div class="col-md-6">
+            {% if mensaje_error %}
+            <div class="alert alert-danger">
+                <p>{{ mensaje_error }}</p>
+            </div>
+            {% elif gasto_total %}
+            <div class="alert alert-success">
+                <h4>Resultado:</h4>
+                <ul>
+                    {% for tipo, gasto in gasto_total.items %}
+                    <li>{{ tipo }}: ${{ gasto|floatformat:2 }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <!-- Metodología -->
+    <div class="mt-5">
+        <h3>Metodología</h3>
+        <ol>
+            <li>El usuario ingresa la distancia del viaje y el rendimiento del vehículo en kilómetros por litro.</li>
+            <li>Se selecciona el tipo de gasolina y su precio por litro. Si se eligen ambos tipos, se deben capturar ambos precios.</li>
+            <li>El sistema calcula el gasto multiplicando la cantidad de litros necesarios por el precio del tipo de gasolina.</li>
+            <li>El resultado se muestra de forma clara para cada tipo de gasolina seleccionado.</li>
+        </ol>
+    </div>
+
+    <!-- Usos -->
+    <div class="mt-5">
+        <h3>Usos</h3>
+        <p>
+            Este cálculo es útil para planificar viajes y controlar el presupuesto relacionado con el consumo de combustible. 
+            Puede ser aplicado en viajes personales, transporte de carga o cualquier situación donde sea necesario estimar el costo del combustible.
+        </p>
+    </div>
+
+    <!-- Unidades de Medida -->
+    <div class="mt-5">
+        <h3>Unidades de Medida</h3>
+        <p>
+            Las unidades empleadas en esta herramienta son:
+        </p>
+        <ul>
+            <li><strong>Distancia:</strong> kilómetros (km)</li>
+            <li><strong>Rendimiento del vehículo:</strong> kilómetros por litro (km/l)</li>
+            <li><strong>Precio del combustible:</strong> pesos mexicanos por litro (MXN/l)</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // Mostrar/ocultar los campos de precio según el checkbox
+    function togglePrecio(tipo) {
+        const grupo = document.getElementById(`precio_${tipo}_group`);
+        const checkbox = document.getElementById(`usar_${tipo}`);
+        grupo.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    // Inicializar estado al cargar la página
+    window.onload = function() {
+        togglePrecio('premium');
+        togglePrecio('magna');
+    };
+</script>
+{% endblock %}

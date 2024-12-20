@@ -721,36 +721,245 @@ def conversor_formatos(request):
 
     return render(request, 'utilidades/conversor_formatos.html', {'resultado': resultado})
 
+#Conversor de unidades
+
+CONVERSIONES = {
+    "longitud": {
+        "metros": 1,
+        "kilometros": 0.001,
+        "centimetros": 100,
+        "milimetros": 1000,
+        "millas": 0.000621371,
+        "yardas": 1.09361,
+        "pies": 3.28084,
+        "pulgadas": 39.3701
+    },
+    "peso": {
+        "kilogramos": 1,
+        "gramos": 1000,
+        "miligramos": 1000000,
+        "toneladas": 0.001,
+        "libras": 2.20462,
+        "onzas": 35.274
+    },
+    "volumen": {
+        "litros": 1,
+        "mililitros": 1000,
+        "centimetros_cubicos": 1000,
+        "metros_cubicos": 0.001,
+        "galones_estadounidenses": 0.264172,
+        "galones_ingleses": 0.219969,
+        "onzas_liquidas": 33.814,
+        "tazas": 4.22675
+    },
+    "temperatura": {
+        "celsius": "C",
+        "fahrenheit": "F",
+        "kelvin": "K"
+    },
+    "tiempo": {
+        "segundos": 1,
+        "minutos": 0.0166667,
+        "horas": 0.000277778,
+        "dias": 0.0000115741,
+        "semanas": 0.0000016534,
+        "meses": 3.80265e-7,
+        "años": 3.17098e-8
+    },
+    "area": {
+        "metros_cuadrados": 1,
+        "kilometros_cuadrados": 0.000001,
+        "pies_cuadrados": 10.7639,
+        "yardas_cuadradas": 1.19599,
+        "hectareas": 0.0001,
+        "acres": 0.000247105
+    },
+    "velocidad": {
+        "metros_por_segundo": 1,
+        "kilometros_por_hora": 3.6,
+        "millas_por_hora": 2.23694,
+        "nudos": 1.94384
+    },
+    "almacenamiento": {
+        "bytes": 1,
+        "kilobytes": 0.001,
+        "megabytes": 0.000001,
+        "gigabytes": 0.000000001,
+        "terabytes": 0.000000000001
+    }
+}
+
+
+
+
 def conversor_unidades(request):
     resultado = None
-    mensaje_error = None  # Inicializamos la variable para el mensaje de error
+    mensaje_error = None
 
-        # Inicializamos las variables con valores predeterminados
+    categorias = CONVERSIONES.keys()
+    categoria_seleccionada = 'longitud'
+    unidades = CONVERSIONES[categoria_seleccionada]
+    
     valor = 0
     unidad_origen = 'metros'
     unidad_destino = 'pies'
 
-    
     if request.method == 'POST':
+        categoria_seleccionada = request.POST.get('categoria')
+        unidades = CONVERSIONES.get(categoria_seleccionada, {})
         valor = float(request.POST.get('valor', 0))
         unidad_origen = request.POST.get('unidad_origen')
         unidad_destino = request.POST.get('unidad_destino')
-        
-        # Validación: Si la unidad de origen es igual a la unidad de destino, mostramos un error
+
         if unidad_origen == unidad_destino:
             mensaje_error = "La unidad de origen no puede ser igual a la unidad de destino."
         else:
-            # Ejemplo simple de conversión entre metros y pies
-            if unidad_origen == 'metros' and unidad_destino == 'pies':
-                resultado = valor * 3.28084  # 1 metro = 3.28084 pies
-            elif unidad_origen == 'pies' and unidad_destino == 'metros':
-                resultado = valor / 3.28084  # 1 pie = 0.3048 metros
+            factor_origen = unidades.get(unidad_origen)
+            factor_destino = unidades.get(unidad_destino)
 
-    # Pasamos el mensaje de error a la plantilla si es necesario
+            if factor_origen and factor_destino:
+                resultado = valor * (factor_destino / factor_origen)
+            else:
+                mensaje_error = "Unidades seleccionadas no válidas."
+
     return render(request, 'utilidades/conversor_unidades.html', {
+        'categorias': categorias,
+        'categoria_seleccionada': categoria_seleccionada,
+        'unidades': unidades,
         'resultado': resultado,
         'mensaje_error': mensaje_error,
         'valor': valor,
         'unidad_origen': unidad_origen,
         'unidad_destino': unidad_destino
+    })
+
+
+#OTROS
+
+#GASOLINA PARA VIAJES:
+def gastos_gasolina(request):
+    # Inicializamos variables
+    precio_premium = 0
+    precio_magna = 0
+    rendimiento = 0
+    distancia = 0
+    gasto_total = None
+    mensaje_error = None
+
+    if request.method == 'POST':
+        try:
+            # Capturamos los valores del formulario
+            distancia = float(request.POST.get('distancia', 0))
+            rendimiento = float(request.POST.get('rendimiento', 0))
+            usar_premium = 'usar_premium' in request.POST
+            usar_magna = 'usar_magna' in request.POST
+
+            # Validamos los precios
+            if usar_premium:
+                precio_premium = float(request.POST.get('precio_premium', 0))
+            if usar_magna:
+                precio_magna = float(request.POST.get('precio_magna', 0))
+
+            # Validación básica
+            if distancia <= 0 or rendimiento <= 0:
+                mensaje_error = "La distancia y el rendimiento deben ser mayores a 0."
+            elif usar_premium and usar_magna and (precio_premium <= 0 or precio_magna <= 0):
+                mensaje_error = "Debe ingresar precios válidos para ambas gasolinas."
+            elif not usar_premium and not usar_magna:
+                mensaje_error = "Debe seleccionar al menos un tipo de gasolina."
+            else:
+                # Cálculo del gasto total
+                litros_necesarios = distancia / rendimiento
+                if usar_premium and usar_magna:
+                    gasto_total = {
+                        'Premium': litros_necesarios * precio_premium,
+                        'Magna': litros_necesarios * precio_magna
+                    }
+                elif usar_premium:
+                    gasto_total = {'Premium': litros_necesarios * precio_premium}
+                elif usar_magna:
+                    gasto_total = {'Magna': litros_necesarios * precio_magna}
+        except ValueError:
+            mensaje_error = "Por favor, ingrese valores numéricos válidos."
+
+    return render(request, 'utilidades/gastos_gasolina.html', {
+        'distancia': distancia,
+        'rendimiento': rendimiento,
+        'precio_premium': precio_premium,
+        'precio_magna': precio_magna,
+        'gasto_total': gasto_total,
+        'mensaje_error': mensaje_error,
+    })
+
+
+
+#romanos a decimales y viceversa
+
+# Funciones para convertir números decimales a romanos y viceversa
+import re
+
+# Funciones para convertir números decimales a romanos y viceversa
+def decimal_a_romano(num):
+    valores = [
+        (1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
+        (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'),
+        (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')
+    ]
+    romano = ""
+    for valor, simbolo in valores:
+        while num >= valor:
+            romano += simbolo
+            num -= valor
+    return romano
+
+def romano_a_decimal(romano):
+    valores = {
+        'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000
+    }
+    total = 0
+    prev_value = 0
+    for letra in reversed(romano):
+        value = valores[letra]
+        if value < prev_value:
+            total -= value
+        else:
+            total += value
+        prev_value = value
+    return total
+
+def conversor_numeros(request):
+    resultado_decimal = 1  # Valor inicial para la conversión decimal
+    resultado_romano = 'I'  # Valor inicial para la conversión romana
+    mensaje_error_decimal = None
+    mensaje_error_romano = None
+
+    # Para la conversión Decimal a Romano
+    if request.method == 'POST':
+        decimal = request.POST.get('decimal', '').strip()
+        romano = request.POST.get('romano', '').strip()
+
+        if decimal:
+            try:
+                numero_decimal = int(decimal)
+                if numero_decimal <= 0:
+                    mensaje_error_decimal = "Por favor ingrese un número decimal mayor que 0."
+                else:
+                    resultado_romano = decimal_a_romano(numero_decimal)
+            except ValueError:
+                mensaje_error_decimal = "El valor ingresado no es un número decimal válido."
+
+        if romano:
+            if re.match('^[MDCLXVI]+$', romano.upper()):
+                try:
+                    resultado_decimal = romano_a_decimal(romano.upper())
+                except KeyError:
+                    mensaje_error_romano = "El número romano ingresado no es válido."
+            else:
+                mensaje_error_romano = "Por favor ingrese un número romano válido."
+
+    return render(request, 'utilidades/conversor_numeros.html', {
+        'resultado_decimal': resultado_decimal,
+        'resultado_romano': resultado_romano,
+        'mensaje_error_decimal': mensaje_error_decimal,
+        'mensaje_error_romano': mensaje_error_romano,
     })

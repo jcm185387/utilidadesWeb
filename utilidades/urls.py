@@ -26,4 +26,10 @@ urlpatterns = [
     path('conversor-divisas/', views.conversor_divisas, name='conversor_divisas'),
     path('conversor-unidades/', views.conversor_unidades, name='conversor_unidades'),
     path('conversor-formatos/', views.conversor_formatos, name='conversor_formatos'),
+
+    #URLS para OTROS
+    path('gastos-gasolina/', views.gastos_gasolina, name='gastos_gasolina'),
+    path('conversor-numeros/', views.conversor_numeros, name='conversor_numeros'),
+
 ]
+

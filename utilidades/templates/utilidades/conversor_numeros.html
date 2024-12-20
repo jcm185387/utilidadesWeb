@@ -1,0 +1,166 @@
+{% extends 'utilidades/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Conversor de Números Decimales y Romanos</h1>
+
+    <!-- Descripción -->
+    <section class="mb-4">
+        <h2>Descripción</h2>
+        <p>Este conversor te permite convertir números decimales a números romanos y viceversa. Es una herramienta interactiva que ofrece resultados en tiempo real, ayudándote a entender y trabajar con este sistema numérico clásico.</p>
+    </section>
+
+    <form class="row">
+        <!-- Sección Decimal a Romano -->
+        <div class="col-md-6 mb-4">
+            <h3>Decimal a Romano</h3>
+            <div class="mb-3">
+                <label for="decimal" class="form-label">Número Decimal</label>
+                <input 
+                    type="number" 
+                    id="decimal" 
+                    class="form-control" 
+                    value="1" 
+                    oninput="convertirDecimal()"
+                >
+                <div id="error-decimal" class="text-danger mt-2"></div>
+            </div>
+            <div class="mb-3">
+                <label for="resultado_romano" class="form-label">Número Romano</label>
+                <input 
+                    type="text" 
+                    id="resultado_romano" 
+                    class="form-control" 
+                    value="I" 
+                    disabled
+                >
+            </div>
+        </div>
+
+        <!-- Sección Romano a Decimal -->
+        <div class="col-md-6 mb-4">
+            <h3>Romano a Decimal</h3>
+            <div class="mb-3">
+                <label for="romano" class="form-label">Número Romano</label>
+                <input 
+                    type="text" 
+                    id="romano" 
+                    class="form-control" 
+                    value="I" 
+                    oninput="convertirRomano()"
+                >
+                <div id="error-romano" class="text-danger mt-2"></div>
+            </div>
+            <div class="mb-3">
+                <label for="resultado_decimal" class="form-label">Número Decimal</label>
+                <input 
+                    type="text" 
+                    id="resultado_decimal" 
+                    class="form-control" 
+                    value="1" 
+                    disabled
+                >
+            </div>
+        </div>
+    </form>
+
+    <!-- Metodología -->
+    <section class="mb-4">
+        <h2>Metodología</h2>
+        <p>La conversión de números decimales a romanos se realiza a través de reglas estándar del sistema romano, utilizando combinaciones de símbolos como <b>I</b>, <b>V</b>, <b>X</b>, <b>L</b>, <b>C</b>, <b>D</b>, y <b>M</b>. Para la conversión inversa, el algoritmo analiza los caracteres y su posición para calcular el valor decimal.</p>
+        <p>Se incluyen validaciones para garantizar que los números sean correctos y que estén dentro del rango permitido (1 a 3,999).</p>
+    </section>
+
+    <!-- Usos -->
+    <section class="mb-4">
+        <h2>Usos</h2>
+        <ul>
+            <li>Educación: Aprende y comprende el sistema numérico romano.</li>
+            <li>Historia: Consulta cómo se representaban los números en la antigüedad.</li>
+            <li>Práctico: Convierte rápidamente entre sistemas numéricos para tareas específicas.</li>
+        </ul>
+    </section>
+</div>
+
+<script>
+    // Validar combinaciones de números romanos
+    function validarRomano(romano) {
+        const patronRomano = /^(?=[MDCLXVI])M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
+        return patronRomano.test(romano);
+    }
+
+    // Función para convertir Decimal a Romano
+    function convertirDecimal() {
+        const decimalInput = document.getElementById('decimal');
+        const romanoOutput = document.getElementById('resultado_romano');
+        const errorDecimal = document.getElementById('error-decimal');
+        const decimalValue = parseInt(decimalInput.value);
+
+        if (!isNaN(decimalValue) && decimalValue >= 1 && decimalValue <= 3999) {
+            const valores = [
+                [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+                [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+                [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
+            ];
+            let resultado = '';
+            let numero = decimalValue;
+
+            valores.forEach(([valor, simbolo]) => {
+                while (numero >= valor) {
+                    resultado += simbolo;
+                    numero -= valor;
+                }
+            });
+
+            romanoOutput.value = resultado;
+            errorDecimal.textContent = '';
+        } else if (decimalValue > 3999) {
+            romanoOutput.value = '';
+            errorDecimal.textContent = 'El número máximo permitido es 3,999.';
+        } else {
+            romanoOutput.value = '';
+            errorDecimal.textContent = 'Por favor ingrese un número decimal válido mayor que 0.';
+        }
+    }
+
+    // Función para convertir Romano a Decimal
+    function convertirRomano() {
+        const romanoInput = document.getElementById('romano');
+        const decimalOutput = document.getElementById('resultado_decimal');
+        const errorRomano = document.getElementById('error-romano');
+        const romanoValue = romanoInput.value.toUpperCase();
+
+        if (validarRomano(romanoValue)) {
+            const valores = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 };
+            let total = 0;
+            let prevValue = 0;
+
+            for (const letra of romanoValue.split('').reverse()) {
+                const currentValue = valores[letra];
+                if (currentValue < prevValue) {
+                    total -= currentValue;
+                } else {
+                    total += currentValue;
+                }
+                prevValue = currentValue;
+            }
+
+            if (total > 3999) {
+                decimalOutput.value = '';
+                errorRomano.textContent = 'El número máximo permitido es MMMCMXCIX (3,999).';
+            } else {
+                decimalOutput.value = total;
+                errorRomano.textContent = '';
+            }
+        } else {
+            decimalOutput.value = '';
+            errorRomano.textContent = 'Por favor ingrese un número romano válido.';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        convertirDecimal();
+        convertirRomano();
+    });
+</script>
+{% endblock %}
